@@ -1,0 +1,17 @@
+package.xml
+setup.cfg
+setup.py
+bug0/BUG_move.py
+bug0/__init__.py
+build/bug0/bug0.egg-info/PKG-INFO
+build/bug0/bug0.egg-info/SOURCES.txt
+build/bug0/bug0.egg-info/dependency_links.txt
+build/bug0/bug0.egg-info/entry_points.txt
+build/bug0/bug0.egg-info/requires.txt
+build/bug0/bug0.egg-info/top_level.txt
+build/bug0/bug0.egg-info/zip-safe
+launch/bug0.launch.py
+resource/bug0
+test/test_copyright.py
+test/test_flake8.py
+test/test_pep257.py

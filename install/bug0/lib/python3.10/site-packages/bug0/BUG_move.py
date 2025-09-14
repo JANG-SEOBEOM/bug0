@@ -114,8 +114,6 @@ class Bug0Publisher(Node):
                 self.state = "go_straight"
 
     def goal_distance(self):
-        if self.pose_ is None:
-            return float('inf')
         distance = math.sqrt((self.GOAL_X - self.pose_.x)**2 +(self.GOAL_Y - self.pose_.y)**2)
         self.get_logger().debug(f"Calculated Goal Distance: {distance}")
         return distance
@@ -132,7 +130,7 @@ class Bug0Publisher(Node):
         return min(valid) if valid else float('inf')
 
     def should_leave_wall(self):
-        if (self.max_range_index(self.scan_data_,self.direction_to_goal()-self.SENSOR_WIDTH, self.direction_to_goal()+self.SENSOR_WIDTH)) < self.OBSTACLE_DISTANCE:
+        if (self.max_range_index(self.scan_data_,self.direction_to_goal()-30, self.direction_to_goal()+30)) < self.OBSTACLE_DISTANCE:
             return False
         else:
             self.rotate_state = "turn"

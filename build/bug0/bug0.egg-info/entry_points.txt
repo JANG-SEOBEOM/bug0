@@ -1,0 +1,2 @@
+[console_scripts]
+bug_move = bug0.BUG_move:main

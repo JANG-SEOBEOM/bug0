@@ -1,0 +1,35 @@
+/usr/local/lib/python3.10/dist-packages/setuptools/_distutils/dist.py:289: UserWarning: Unknown distribution option: 'tests_require'
+  warnings.warn(msg)
+running egg_info
+creating build/bug0/bug0.egg-info
+writing build/bug0/bug0.egg-info/PKG-INFO
+writing dependency_links to build/bug0/bug0.egg-info/dependency_links.txt
+writing entry points to build/bug0/bug0.egg-info/entry_points.txt
+writing requirements to build/bug0/bug0.egg-info/requires.txt
+writing top-level names to build/bug0/bug0.egg-info/top_level.txt
+writing manifest file 'build/bug0/bug0.egg-info/SOURCES.txt'
+reading manifest file 'build/bug0/bug0.egg-info/SOURCES.txt'
+writing manifest file 'build/bug0/bug0.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/user/ros2_ws/src/bug0/build/bug0/build/lib/bug0
+copying bug0/__init__.py -> /home/user/ros2_ws/src/bug0/build/bug0/build/lib/bug0
+copying bug0/BUG_move.py -> /home/user/ros2_ws/src/bug0/build/bug0/build/lib/bug0
+running install
+running install_lib
+creating /home/user/ros2_ws/src/bug0/install/bug0/lib/python3.10/site-packages/bug0
+copying /home/user/ros2_ws/src/bug0/build/bug0/build/lib/bug0/__init__.py -> /home/user/ros2_ws/src/bug0/install/bug0/lib/python3.10/site-packages/bug0
+copying /home/user/ros2_ws/src/bug0/build/bug0/build/lib/bug0/BUG_move.py -> /home/user/ros2_ws/src/bug0/install/bug0/lib/python3.10/site-packages/bug0
+byte-compiling /home/user/ros2_ws/src/bug0/install/bug0/lib/python3.10/site-packages/bug0/__init__.py to __init__.cpython-310.pyc
+byte-compiling /home/user/ros2_ws/src/bug0/install/bug0/lib/python3.10/site-packages/bug0/BUG_move.py to BUG_move.cpython-310.pyc
+running install_data
+creating /home/user/ros2_ws/src/bug0/install/bug0/share/ament_index/resource_index/packages
+copying resource/bug0 -> /home/user/ros2_ws/src/bug0/install/bug0/share/ament_index/resource_index/packages
+copying package.xml -> /home/user/ros2_ws/src/bug0/install/bug0/share/bug0
+copying launch/bug0.launch.py -> /home/user/ros2_ws/src/bug0/install/bug0/share/bug0
+copying launch/bug0.launch.py -> /home/user/ros2_ws/src/bug0/install/bug0/share/bug0
+running install_egg_info
+Copying build/bug0/bug0.egg-info to /home/user/ros2_ws/src/bug0/install/bug0/lib/python3.10/site-packages/bug0-0.0.0-py3.10.egg-info
+running install_scripts
+Installing bug_move script to /home/user/ros2_ws/src/bug0/install/bug0/lib/bug0
+writing list of installed files to '/home/user/ros2_ws/src/bug0/build/bug0/install.log'
