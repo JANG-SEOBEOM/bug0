@@ -7,26 +7,26 @@ from launch_ros.actions import Node
 import os
 
 def generate_launch_description():
-    # turtlebot3_gazebo 패키지의 경로 가져오기
+    # Get the path of the turtlebot3_gazebo package
     pkg_turtlebot3_gazebo = get_package_share_directory('turtlebot3_gazebo')
 
-    # 실행할 기본 launch 파일 지정
+     # Path to the default stage4 launch file
     stage4_launch = os.path.join(pkg_turtlebot3_gazebo, 'launch', 'turtlebot3_dqn_stage4.launch.py')
 
     return LaunchDescription([
-        # Robot 모델 선택 인자 (burger, waffle, waffle_pi)
+        # Argument to select robot model (burger, waffle, waffle_pi)
         DeclareLaunchArgument(
             'model',
             default_value='burger',
             description='Turtlebot3 model type'
         ),
 
-        # Stage4 시뮬레이션 포함
+        # Include stage4 simulation launch
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(stage4_launch),
             launch_arguments={'model': LaunchConfiguration('model')}.items()
         ),
-
+        # Launch the Bug0 navigation node
         Node(
             package ='bug0',
             executable = 'bug_move',

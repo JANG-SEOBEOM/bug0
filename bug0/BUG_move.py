@@ -9,16 +9,20 @@ import tf_transformations as transform
 class Bug0Publisher(Node):
     state = "go_straight"
     rotate_state = "turn"
-    goal_position_x = 1.7
-    goal_position_y = 1
+    GOAL_X = 1.7
+    GOAL_Y = 1.0
+    LINEAR_SPEED = 0.2
+    ANGULAR_SPEED_FOR_GO_STRAIGHT = 0.5
+    ANGULAR_SPEED = 0.2
+    OBSTACLE_DISTANCE = 0.4
+    GOAL_TOLERANCE = 0.05
+    SENSOR_WIDTH = 45
 
     def __init__(self):
         super().__init__('bug0_publisher')
         self.pose_ = None
         self.location_sub_ = self.create_subscription(Odometry, '/odom', self.location_callback, 10) 
-        self.location_sub_
         self.subscription_ = self.create_subscription(LaserScan, '/scan', self.scan_callback, 10)
-        self.subscription_
         self.publisher_ = self.create_publisher(Twist, '/cmd_vel', 10)
         
         timer_period = 0.5  # seconds
@@ -31,49 +35,50 @@ class Bug0Publisher(Node):
             return
         move = Twist()
         if self.state == "go_straight":
-            self.Go_straight(move)
+            self.go_straight(move)
         elif self.state ==  "follow_wall":
-            self.Follow_wall(move)
+            self.follow_wall(move)
         elif self.state == "finish":
             move.linear.x = 0.0
             move.angular.z = 0.0
             self.get_logger().info("Goal reached!")
 
-        self.get_logger().info(f"state = {self.state}, rotate_state = {self.rotate_state}  {self.pose_.x}  {self.pose_.y} ")
-        self.get_logger().info(f"Goal distance: {self.goal_distance()}")         
+        self.get_logger().debug(f"state = {self.state}, rotate_state = {self.rotate_state}  {self.pose_.x}  {self.pose_.y} ")
+        self.get_logger().debug(f"Goal distance: {self.goal_distance()}")         
+        
         self.publisher_.publish(move)
 
-    def Go_straight(self, move):
-        angle_to_goal = math.atan2(self.goal_position_y - self.pose_.y, self.goal_position_x - self.pose_.x)
+    def go_straight(self, move):
+        angle_to_goal = math.atan2(self.GOAL_Y - self.pose_.y, self.GOAL_X - self.pose_.x)
         angle_error = angle_to_goal - self.yaw
-        move.linear.x = 0.2 if abs(angle_error) < 0.1 else 0.0
+        move.linear.x = self.LINEAR_SPEED if abs(angle_error) < 0.1 else 0.0
         move.linear.y = 0.0
         move.linear.z = 0.0
         move.angular.x = 0.0
         move.angular.y = 0.0
-        move.angular.z = 0.5 * angle_error
+        move.angular.z = self.ANGULAR_SPEED_FOR_GO_STRAIGHT * angle_error
     
-    def Follow_wall(self, move):
+    def follow_wall(self, move):
         if self.rotate_state == "turn":
             move.linear.x = 0.0
             move.linear.y = 0.0
             move.linear.z = 0.0
             move.angular.x = 0.0
             move.angular.y = 0.0
-            move.angular.z = 0.2
-            if self.max_range_index(self.scan_data_,-45,45) >= 0.4:
+            move.angular.z = self.LINEAR_SPEED
+            if self.max_range_index(self.scan_data_,-45,45) >= self.OBSTACLE_DISTANCE:
                 self.rotate_state = "go_straight"
             else:
                 self.rotate_state = "turn"
         
         elif self.rotate_state == "go_straight":
-            move.linear.x = 0.2
+            move.linear.x = self.LINEAR_SPEED
             move.linear.y = 0.0
             move.linear.z = 0.0
             move.angular.x = 0.0
             move.angular.y = 0.0
             move.angular.z = 0.0
-            if self.max_range_index(self.scan_data_,270,330) < 0.4:
+            if self.max_range_index(self.scan_data_,270,330) < self.OBSTACLE_DISTANCE:
                 self.rotate_state = "turn"
             else:
                 self.rotate_state = "go_straight"
@@ -94,32 +99,23 @@ class Bug0Publisher(Node):
         self.scan_data_ = scan_data.ranges
         min = self.max_range_index(self.scan_data_, -45, 45)
 
-        if self.goal_distance() < 0.05:
+        if self.goal_distance() < self.GOAL_TOLERANCE:
             self.state = "finish"
 
         if self.state == "go_straight":
-            if min < 0.4:
-                if self.goal_distance() < 0.05:
-                    self.state = "finish"
-                else:
-                    self.state = "follow_wall"
+            if min < self.OBSTACLE_DISTANCE:
+                self.state = "follow_wall"
             else:
                 self.state = "go_straight"            
         elif self.state == "follow_wall":
-            if self.goal_distance() < 0.05:
-                self.state = "finish"
+            if self.should_leave_wall() == False:
+                self.state = "follow_wall"
             else:
-                if self.should_leave_wall() == False:
-                    if self.goal_distance() < 0.05:
-                        self.state = "finish"
-                    else:
-                        self.state = "follow_wall"
-                else:
-                    self.state = "go_straight"
+                self.state = "go_straight"
 
     def goal_distance(self):
-        distance = math.sqrt((self.goal_position_x - self.pose_.x)**2 +(self.goal_position_y - self.pose_.y)**2)
-        self.get_logger().info(f"Calculated Goal Distance: {distance}")
+        distance = math.sqrt((self.GOAL_X - self.pose_.x)**2 +(self.GOAL_Y - self.pose_.y)**2)
+        self.get_logger().debug(f"Calculated Goal Distance: {distance}")
         return distance
 
     def max_range_index(self, ranges, i, j):
@@ -134,30 +130,23 @@ class Bug0Publisher(Node):
         return min(valid) if valid else float('inf')
 
     def should_leave_wall(self):
-        if (self.max_range_index(self.scan_data_,self.direction_to_goal()-30, self.direction_to_goal()+30)) < 0.4:
+        if (self.max_range_index(self.scan_data_,self.direction_to_goal()-30, self.direction_to_goal()+30)) < self.OBSTACLE_DISTANCE:
             return False
         else:
             self.rotate_state = "turn"
             return True   
               
     def direction_to_goal(self):
-        angle_to_goal = math.atan2(self.goal_position_y - self.pose_.y, self.goal_position_x - self.pose_.x)
+        angle_to_goal = math.atan2(self.GOAL_Y - self.pose_.y, self.GOAL_X - self.pose_.x)
         direction = (angle_to_goal - self.yaw ) * 180.0 / math.pi
         return int(direction % 360)
 
 def main(args=None):
     rclpy.init(args=args)
-
     bug0_publisher = Bug0Publisher()
-
     rclpy.spin(bug0_publisher)
-
-    # Destroy the node explicitly
-    # (optional - otherwise it will be done automatically
-    # when the garbage collector destroys the node object)
     bug0_publisher.destroy_node()
     rclpy.shutdown()
-
 
 if __name__ == '__main__':
     main()
