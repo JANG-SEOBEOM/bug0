@@ -39,4 +39,4 @@ ros2 launch bug0 bug0.launch.py
 ```
 
 ## Demo
-<video src="videos/bug0_demo.mp4" width="600" controls></video>
+https://github.com/JANG-SEOBEOM/bug0/blob/main/videos/bug0_demo.mp4
